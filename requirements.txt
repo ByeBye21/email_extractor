@@ -1,0 +1,57 @@
+# Core web crawling and scraping
+scrapy>=2.11.0
+playwright>=1.40.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+html5lib>=1.1
+
+# Async HTTP requests
+httpx>=0.25.0
+aiofiles>=23.2.0
+
+# Data processing and export
+pandas>=2.1.0
+openpyxl>=3.1.0
+xlsxwriter>=3.1.0
+
+# Email validation and regex
+email-validator>=2.1.0
+phonenumbers>=8.13.0
+regex>=2023.10.0
+
+# OCR for image-based email extraction
+pytesseract>=0.3.10
+Pillow>=10.1.0
+
+# Progress tracking and logging
+tqdm>=4.66.0
+colorlog>=6.7.0
+
+# URL parsing and validation
+urllib3>=2.1.0
+validators>=0.22.0
+
+# Configuration management
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+
+# CRM integrations (optional)
+salesforce-bulk>=2.2.0
+hubspot-api-client>=7.0.0
+
+# Image processing for OCR
+opencv-python>=4.8.0
+
+# Async support
+asyncio-throttle>=1.0.2
+aiohttp>=3.9.0
+
+# AI/NLP for enhanced extraction
+spacy>=3.7.0
+
+# Development and testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+black>=23.10.0
+flake8>=6.1.0
+mypy>=1.7.0
