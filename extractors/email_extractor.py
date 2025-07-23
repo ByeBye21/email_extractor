@@ -542,15 +542,16 @@ class EmailExtractor:
     
     def _extract_ocr_emails_sync(self, soup: BeautifulSoup, source_url: str) -> List[Dict]:
         """Extract emails from images using OCR."""
+
         if not self.ocr_available:
+            logging.warning("OCR DEBUG: OCR not available")
             return []
         
         emails = []
-        
-        # Find all images
         images = soup.find_all('img', src=True)
+        logging.info(f"OCR DEBUG: Found {len(images)} images to process")
         
-        for img in images:  # Process all images found on the page
+        for img in images:  # Process all images (removed [:5] limit)
             try:
                 img_src = img.get('src')
                 if not img_src:
@@ -563,8 +564,8 @@ class EmailExtractor:
                     base_url = f"{urlparse(source_url).scheme}://{urlparse(source_url).netloc}"
                     img_src = f"{base_url}{img_src}"
                 elif not img_src.startswith('http'):
-                    continue
-                
+                    img_src = urljoin(source_url, img_src)
+                                
                 # Download and process image
                 response = requests.get(img_src, timeout=10)
                 response.raise_for_status()
@@ -574,17 +575,25 @@ class EmailExtractor:
                 # Extract text using OCR
                 ocr_text = pytesseract.image_to_string(image)
                 
-                # Extract emails from OCR text
-                ocr_emails = self._extract_standard_emails(ocr_text)
-                for email_data in ocr_emails:
-                    email_data['method'] = 'ocr'
-                    email_data['confidence'] = 0.6  # Lower confidence for OCR
-                    email_data['image_src'] = img_src
-                    emails.append(email_data)
-                    
+                # Use direct email pattern matching
+                email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+                found_emails = re.findall(email_pattern, ocr_text, re.IGNORECASE)
+                                
+                for email in found_emails:
+                    if self._is_valid_email_format_enhanced(email):
+                        emails.append({
+                            'email': email.lower(),
+                            'method': 'ocr',
+                            'confidence': 0.6,
+                            'context': ocr_text[:200],
+                            'image_src': img_src,
+                            'source_url': source_url
+                        })
+                                                
             except Exception as e:
-                logging.debug(f"Error processing image {img_src}: {e}")
+                logging.error(f"Error processing image {img_src}: {e}")
         
+        logging.info(f"Total OCR emails found: {len(emails)}")
         return emails
     
     def extract_social_profiles(self, content: str, source_url: str) -> List[Dict]:
