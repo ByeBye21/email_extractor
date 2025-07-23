@@ -432,6 +432,14 @@ class WebsiteCrawler:
         text_emails = self._extract_from_text_patterns(soup, url)
         emails_found.extend(text_emails)
         
+        if hasattr(self, 'config') and getattr(self.config, 'ocr_emails', False):
+            logging.info("OCR: Starting OCR processing")
+            ocr_emails = self.email_extractor._extract_ocr_emails_sync(soup, url)
+            logging.info(f"OCR: OCR returned {len(ocr_emails)} emails")
+            emails_found.extend(ocr_emails)
+        else:
+            logging.info("OCR: OCR disabled or not configured")
+            
         # Remove duplicates and enhance
         unique_emails = self._remove_duplicates(emails_found)
         
