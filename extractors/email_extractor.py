@@ -9,7 +9,7 @@ import re
 from typing import Dict, List, Set, Optional, Tuple
 from urllib.parse import unquote, urlparse
 import html
-
+from urllib.parse import urljoin, urlparse, unquote
 from bs4 import BeautifulSoup
 
 # Optional imports with fallbacks
@@ -550,7 +550,7 @@ class EmailExtractor:
         # Find all images
         images = soup.find_all('img', src=True)
         
-        for img in images[:5]:  # Limit to first 5 images to avoid excessive processing
+        for img in images:  # Process all images found on the page
             try:
                 img_src = img.get('src')
                 if not img_src:
